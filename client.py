@@ -1,6 +1,8 @@
 # Python TCP Client A
 #ala widzisz mnie ?
 #ale jaja XDD widzę!
+# to git
+
 
 import socket
 from threading import Thread
