@@ -1,4 +1,5 @@
 # Python TCP Client A
+#ala widzisz mnie ?
 import socket
 from threading import Thread
 import os
