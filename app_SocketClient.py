@@ -1,11 +1,11 @@
 from SocketClient import SocketClient
 from CheckInput import CheckInput
+from GaduGaduClient import GaduGaduClient
 client = SocketClient()
-
+ggClient = GaduGaduClient(client)
 print("Enter 'exit' to close client")
-msg = ""
 nick = input("Enter your nick: ")
-
+ggClient.Login(nick)
 print("You can chat with your friends")
 while True:
     msg = CheckInput()

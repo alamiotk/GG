@@ -65,7 +65,7 @@ class SocketServerTestCase(unittest.TestCase):
                 assert not serverSocketMock.accept.called
 
 
-    def test_process_clients_empty(self):
+    def test_check_for_msg_no_clients(self):
         with patch('socket.socket') as socket_socket_mock:
             with patch('select.select') as select_select_mock:
                 serverSocketMock = Mock()
@@ -74,13 +74,13 @@ class SocketServerTestCase(unittest.TestCase):
                 
                 sS = SocketServer("1.2.3.4", 1234)
                 assert sS.clientSocketList == []
-                sS.ProcessClients(1.5)
+                assert [] == sS.CheckForMsg(1.5)
                 assert sS.clientSocketList == []
                 del sS
                 
                 assert not select_select_mock.called
                 
-    def test_process_clients_single_client(self):
+    def test_check_for_msg_single_client(self):
         with patch('socket.socket') as socket_socket_mock:
             with patch('select.select') as select_select_mock:
                 serverSocketMock = Mock()
@@ -91,15 +91,13 @@ class SocketServerTestCase(unittest.TestCase):
                 
                 sS = SocketServer("1.2.3.4", 1234)
                 sS.clientSocketList = [socketClientMock]
-                assert sS.clientSocketList == [socketClientMock]
-                sS.ProcessClients(1.5)
+                assert ["ABCD"] == sS.CheckForMsg()
                 del sS
 
-                select_select_mock.assert_called_with([socketClientMock],[],[],1.5)
+                select_select_mock.assert_called_with([socketClientMock],[],[],0.2)
                 socketClientMock.recv.assert_called_with(1024)
-                socketClientMock.send.assert_called_with(b"ABCD")
                 
-    def test_process_clients_multiple_client(self):
+    def test_check_for_msg_many_client(self):
         with patch('socket.socket') as socket_socket_mock:
             with patch('select.select') as select_select_mock:
                 serverSocketMock = Mock()
@@ -111,14 +109,11 @@ class SocketServerTestCase(unittest.TestCase):
                 
                 sS = SocketServer("1.2.3.4", 1234)
                 sS.clientSocketList = [socketClientMock1, socketClientMock2]
-                assert sS.clientSocketList == [socketClientMock1, socketClientMock2]
-                sS.ProcessClients(1.5)
+                assert ["ABCD"] == sS.CheckForMsg()
                 del sS
 
-                select_select_mock.assert_called_with([socketClientMock1, socketClientMock2],[],[],1.5)
+                select_select_mock.assert_called_with([socketClientMock1, socketClientMock2],[],[],0.2)
                 socketClientMock1.recv.assert_called_with(1024)
-                socketClientMock1.send.assert_called_with(b"ABCD")
-                socketClientMock2.send.assert_called_with(b"ABCD")
 
 if __name__ == '__main__':
     unittest.main()
