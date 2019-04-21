@@ -12,7 +12,7 @@ while True:
     if msg == 'exit':
         break
     if "" != msg:
-        client.Send(nick + ": " + msg)
+        ggClient.SendMsg(msg)
     data = client.Receive()
     if "" != data:
         print (data.decode())
