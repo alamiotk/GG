@@ -1,0 +1,8 @@
+
+Plan realizacji:
+1.Pod³¹czanie/Roz³¹czenie klienta do serwera.
+2.Wysy³anie wiadomoœci klient -> serwer , serwer->klient.
+3.Wiadomoœæ od klienta trafia do wszystkich dostêpnych klientów.
+4.Klient dostaje informacje o dostêpnych  u¿ytkownikach.
+5.Klient mo¿e wysy³aæ wiadomoœci do konkretnego u¿ytkownika.
+6.Klinet mo¿e opuœciæ serwer , a inni siê o tym dowiaduj¹.
