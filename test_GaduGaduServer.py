@@ -1,6 +1,7 @@
 import unittest
 from unittest.mock import Mock
 from unittest.mock import patch
+from unittest.mock import call
 from GaduGaduServer import GaduGaduServer
 
 class GaduGaduServerTestCase(unittest.TestCase):
@@ -34,6 +35,26 @@ class GaduGaduServerTestCase(unittest.TestCase):
         mock.CheckForMsg.assert_called_with()
         assert not mock.SendToAll.called
 
+    def test_login_first_user(self):
+        mock = Mock()
+        mock.CheckForMsg.return_value = ["LOGIN:user1"]
+        server = GaduGaduServer(mock)
+        server.Process()
+        del server
 
+        mock.CheckForMsg.assert_called_with()
+        mock.SendToAll.assert_called_with("USERS:user1")
+
+
+    def test_login_two_user(self):
+        mock = Mock()
+        mock.CheckForMsg.return_value = ["LOGIN:user1","LOGIN:user2"]
+        server = GaduGaduServer(mock)
+        server.Process()
+        del server
+
+        mock.CheckForMsg.assert_called_with()
+        mock.SendToAll.assert_has_calls([call("USERS:user1"), call("USERS:user1,user2")])
+        
 if __name__ == '__main__':
     unittest.main()
