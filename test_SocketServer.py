@@ -91,7 +91,7 @@ class SocketServerTestCase(unittest.TestCase):
                 
                 sS = SocketServer("1.2.3.4", 1234)
                 sS.clientSocketList = [socketClientMock]
-                assert ["ABCD"] == sS.CheckForMsg()
+                assert [(socketClientMock,"ABCD")] == sS.CheckForMsg()
                 del sS
 
                 select_select_mock.assert_called_with([socketClientMock],[],[],0.2)
@@ -109,11 +109,24 @@ class SocketServerTestCase(unittest.TestCase):
                 
                 sS = SocketServer("1.2.3.4", 1234)
                 sS.clientSocketList = [socketClientMock1, socketClientMock2]
-                assert ["ABCD"] == sS.CheckForMsg()
+                assert [(socketClientMock1,"ABCD")] == sS.CheckForMsg()
                 del sS
 
                 select_select_mock.assert_called_with([socketClientMock1, socketClientMock2],[],[],0.2)
                 socketClientMock1.recv.assert_called_with(1024)
 
+    def test_send_to(self):
+        with patch('socket.socket') as socket_mock:
+            mock = Mock()
+            socket_mock.return_value = mock
+            clientMock = Mock()
+
+            sS = SocketServer("1.2.3.4", 1234)
+            sS.SendTo(clientMock, "DATA");
+            del sS
+
+            socket_mock.assert_called_with(socket.AF_INET, socket.SOCK_STREAM, socket.getprotobyname('TCP'))
+            mock.bind.assert_called_with(("1.2.3.4", 1234))
+            clientMock.send.assert_called_with(b"DATA")
 if __name__ == '__main__':
     unittest.main()

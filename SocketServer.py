@@ -21,12 +21,11 @@ class SocketServer():
         if self.clientSocketList:
             readable, writable, errored = select.select(self.clientSocketList, [], [], timeout)
             for toRead in readable:
-                data.append(toRead.recv(1024).decode())
+                data.append((toRead,toRead.recv(1024).decode()))
         return data
 
-    def SendToAll(self, data):
-        for toSend in self.clientSocketList:
-            toSend.send(data.encode())
+    def SendTo(self, socket, data):
+            socket.send(data.encode())
         
     def __del__(self):
         for s in self.clientSocketList:

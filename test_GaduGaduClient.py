@@ -25,11 +25,10 @@ class GaduGaduClientTestCase(unittest.TestCase):
     def test_send_msg(self):
         mock = Mock()
         client = GaduGaduClient(mock)
-        client.nick = "nick"
         client.SendMsg("user1:czesc")
         del client
 
-        mock.Send.assert_called_with("MSG:nick:user1:czesc")
+        mock.Send.assert_called_with("MSG_TO:user1:czesc")
 
 if __name__ == '__main__':
     unittest.main()

@@ -10,6 +10,6 @@ class GaduGaduClient():
     def SendMsg(self,msg):
         data = msg.split(":",1)
         if len(data) == 2:
-            self.socketClient.Send("MSG:" + self.nick + ":" + data[0] + ":" + data[1])
+            self.socketClient.Send("MSG_TO:" + data[0] + ":" + data[1])
         else:
-            print("Wybierz do kogo chcesz wysłać wiadomość poprzez nick: 'Twoja wiadomosc'")
+            print("Wybierz do kogo chcesz wyslac wiadomosc poprzez nick: 'Twoja wiadomosc'")
