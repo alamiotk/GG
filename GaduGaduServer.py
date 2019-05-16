@@ -12,9 +12,18 @@ class GaduGaduServer():
             self.priv_process_login(socket, parsedData[1])
           elif parsedData[0] == "MSG_TO":
             self.priv_process_msg_to(socket,parsedData[1])
+          elif parsedData[0] == "ERROR" or parsedData[0] == "DISCONNECT":
+            self.priv_process_error(socket)
 
-    def priv_process_login(self, socket, data):
-        self.users_list.append((socket,data))
+    def priv_get_nick_to_socket_from_user_list(self, socket):
+        return_nick = ""
+        for socket_from,nick in self.users_list:
+            if socket_from == socket:
+                return_nick = nick
+                break
+        return return_nick
+
+    def priv_send_users(self):
         dataToSend = "USERS:";
         nickList = []
         socketList = []
@@ -26,12 +35,17 @@ class GaduGaduServer():
         for socket in socketList:
             self.socketServer.SendTo(socket,dataToSend)
 
+    def priv_process_error(self,socket):
+        nick_to_remove = self.priv_get_nick_to_socket_from_user_list(socket)
+        self.users_list.remove((socket,nick_to_remove))
+        self.priv_send_users()
+
+    def priv_process_login(self, socket, data):
+        self.users_list.append((socket,data))
+        self.priv_send_users()
+
     def priv_process_msg_to(self,socket,data):
-        nick_from = ""
-        for socket_from,nick in self.users_list:
-            if socket_from == socket:
-                nick_from = nick
-                break
+        nick_from = self.priv_get_nick_to_socket_from_user_list(socket)
         
         socket_to_send = None
         parsedMsg = data.split(":",1)

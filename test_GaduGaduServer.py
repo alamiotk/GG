@@ -87,5 +87,35 @@ class GaduGaduServerTestCase(unittest.TestCase):
         assert not socketMockReceiver.SendTo.called
         mock.SendTo.assert_called_with(socketMockSender,"MSG_ERROR:user1 not logged")
 
+    def test_client_error(self):
+        socketMockSender = Mock()
+        socketMockReceiver = Mock()
+        socketMockReceiver2 = Mock()
+        mock = Mock()
+        mock.CheckForMsg.return_value = [(socketMockSender,"ERROR")]
+        server = GaduGaduServer(mock)
+        server.users_list = [(socketMockSender,"nick"),(socketMockReceiver,"user1"),(socketMockReceiver2,"user2")]
+        server.Process()
+        assert server.users_list == [(socketMockReceiver,"user1"),(socketMockReceiver2,"user2")]
+        del server
+
+        mock.CheckForMsg.assert_called_with()
+        mock.SendTo.assert_has_calls([call(socketMockReceiver,"USERS:user1,user2")])
+
+    def test_client_disconnect(self):
+        socketMockSender = Mock()
+        socketMockReceiver = Mock()
+        socketMockReceiver2 = Mock()
+        mock = Mock()
+        mock.CheckForMsg.return_value = [(socketMockSender,"DISCONNECT")]
+        server = GaduGaduServer(mock)
+        server.users_list = [(socketMockSender,"nick"),(socketMockReceiver,"user1"),(socketMockReceiver2,"user2")]
+        server.Process()
+        assert server.users_list == [(socketMockReceiver,"user1"),(socketMockReceiver2,"user2")]
+        del server
+
+        mock.CheckForMsg.assert_called_with()
+        mock.SendTo.assert_has_calls([call(socketMockReceiver,"USERS:user1,user2")])
+
 if __name__ == '__main__':
     unittest.main()

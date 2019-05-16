@@ -128,5 +128,24 @@ class SocketServerTestCase(unittest.TestCase):
             socket_mock.assert_called_with(socket.AF_INET, socket.SOCK_STREAM, socket.getprotobyname('TCP'))
             mock.bind.assert_called_with(("1.2.3.4", 1234))
             clientMock.send.assert_called_with(b"DATA")
+
+    def test_check_for_msg_client_with_error(self):
+        with patch('socket.socket') as socket_socket_mock:
+            with patch('select.select') as select_select_mock:
+                serverSocketMock = Mock()
+                socket_socket_mock.return_value = serverSocketMock
+                socketClientMock = Mock()
+                socketClientMock.recv.return_value = b"ABCD"
+                socketClientMock.recv.side_effect = socket.error
+                select_select_mock.return_value = ([socketClientMock],[],[])
+
+                sS = SocketServer("1.2.3.4", 1234)
+                sS.clientSocketList = [socketClientMock]
+                assert [(socketClientMock,"ERROR")] == sS.CheckForMsg()
+                socketClientMock.recv.assert_called_with(1024)
+                assert socketClientMock.close.called
+                assert sS.clientSocketList == []
+                del sS
+
 if __name__ == '__main__':
     unittest.main()
